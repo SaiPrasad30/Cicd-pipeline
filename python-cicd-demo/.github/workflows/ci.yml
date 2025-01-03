@@ -21,10 +21,9 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r python-cicd-demo/requirements.txt
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
+
 
     - name: Run tests
       run: pytest
