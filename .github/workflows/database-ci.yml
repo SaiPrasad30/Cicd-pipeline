@@ -1,17 +1,35 @@
-# .gitlab-ci.yml or .github/workflows/database-ci.yml
+name: Database Build CI
 
-stages:
-  - build
-  - test
+on:
+  push:
+    branches:
+      - main  # or your desired branch name
+  pull_request:
+    branches:
+      - main  # or your desired branch name
 
-build:
-  stage: build
-  script:
-    - echo "Building database objects..."
-    - sqlcheck ./db-scripts/*.sql   # Hypothetical command to check SQL syntax
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-test:
-  stage: test
-  script:
-    - echo "Running database unit tests..."
-    - dbunit --runTests   # Hypothetical command to run database unit tests if any are defined
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up MySQL (just for validation, no deployment)
+        run: |
+          sudo apt-get update
+          sudo apt-get install mysql-server
+
+      - name: Validate SQL Scripts (Table, View, Procedure)
+        run: |
+          echo "Validating SQL Scripts"
+          
+          # Validate Table Creation SQL (without applying it)
+          mysql -u root -e "SOURCE ./db-scripts/001_create_users_table.sql" --dry-run
+
+          # Validate View Creation SQL (without applying it)
+          mysql -u root -e "SOURCE ./db-scripts/002_create_active_users_view.sql" --dry-run
+
+          # Validate Procedure Creation SQL (without applying it)
+          mysql -u root -e "SOURCE ./db-scripts/003_create_get_user_details_procedure.sql" --dry-run
