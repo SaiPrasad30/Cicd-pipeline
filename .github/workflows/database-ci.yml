@@ -23,6 +23,6 @@ jobs:
 
       - name: Run Database Migration
         run: |
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/001_create_users_table.sql"
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/002_create_active_users_view.sql"
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/003_create_get_user_details_procedure.sql"
+          mysql -h ${{ secrets.DB_HOST }} --port ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/001_create_users_table.sql"
+          mysql -h ${{ secrets.DB_HOST }} --port ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/002_create_active_users_view.sql"
+          mysql -h ${{ secrets.DB_HOST }} --port ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/003_create_get_user_details_procedure.sql"
