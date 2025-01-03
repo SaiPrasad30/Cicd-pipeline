@@ -6,7 +6,7 @@ on:
       - main  # or your desired branch name
   pull_request:
     branches:
-      - main  # or your desired branch name
+      - main  # or your desired branch names
 
 jobs:
   build:
