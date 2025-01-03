@@ -16,13 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up MySQL
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
+      - name: Set up MySQL client
+        run: sudo apt-get install mysql-client
 
-      - name: Run Database Migration
+      - name: Identify Changed SQL Files
+        id: changed-files
         run: |
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/001_create_users_table.sql"
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/002_create_active_users_view.sql"
-          mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./db-scripts/003_create_get_user_details_procedure.sql"
+          # Get a list of changed SQL files from the last commit
+          changed_files=$(git diff --name-only HEAD~1 HEAD | grep -E '\.sql$')
+          echo "Changed SQL files: $changed_files"
+          echo "::set-output name=changed_files::$changed_files"
+
+      - name: Deploy Changed SQL Scripts
+        run: |
+          if [ -n "${{ steps.changed-files.outputs.changed_files }}" ]; then
+            for file in ${{ steps.changed-files.outputs.changed_files }}; do
+              echo "Running migration script: $file"
+              mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./$file"
+            done
+          else
+            echo "No SQL files changed. Skipping deployment."
+          fi
