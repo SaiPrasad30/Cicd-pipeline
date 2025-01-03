@@ -19,24 +19,10 @@ jobs:
       - name: Set up MySQL client
         run: sudo apt-get install mysql-client
 
-      - name: Fetch latest changes
-        run: git fetch origin main
-
-      - name: Identify Changed SQL Files
-        id: changed-files
+      - name: Deploy SQL Scripts
         run: |
-          # Get a list of changed SQL files compared to the latest commit on the main branch
-          changed_files=$(git diff --name-only origin/main...HEAD | grep -E '\.sql$')
-          echo "Changed SQL files: $changed_files"
-          echo "::set-output name=changed_files::$changed_files"
-
-      - name: Deploy Changed SQL Scripts
-        run: |
-          if [ -n "${{ steps.changed-files.outputs.changed_files }}" ]; then
-            for file in ${{ steps.changed-files.outputs.changed_files }}; do
-              echo "Running migration script: $file"
-              mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source ./$file"
-            done
-          else
-            echo "No SQL files changed. Skipping deployment."
-          fi
+          # Run all SQL files in the db-scripts directory
+          for file in ./db-scripts/*.sql; do
+            echo "Running migration script: $file"
+            mysql -h ${{ secrets.DB_HOST }} -P ${{ secrets.DB_PORT }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "source $file"
+          done
