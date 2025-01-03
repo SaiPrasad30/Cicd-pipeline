@@ -1,5 +1,5 @@
 -- users_table.sql
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS Tinku.users (
     id INT PRIMARY KEY,
     username VARCHAR(50),
     email VARCHAR(100),
