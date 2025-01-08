@@ -1,4 +1,4 @@
--- users_table.sql
+-- users_table.sql test
 CREATE TABLE IF NOT EXISTS Tinku.users (
     id INT PRIMARY KEY,
     username VARCHAR(50),
